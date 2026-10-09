@@ -181,6 +181,14 @@ extension MessagingStyleInformationMapper on MessagingStyleInformation {
       });
 }
 
+extension AndroidPublicVersionMapper on AndroidPublicVersion {
+  /// Converts the [AndroidPublicVersion] to a map.
+  Map<String, Object?> toMap() => <String, Object?>{
+    'title': title,
+    'body': body,
+  };
+}
+
 extension AndroidNotificationDetailsMapper on AndroidNotificationDetails {
   Map<String, Object?> toMap() =>
       <String, Object?>{
@@ -224,6 +232,7 @@ extension AndroidNotificationDetailsMapper on AndroidNotificationDetails {
           'ledOffMs': ledOffMs,
           'ticker': ticker,
           'visibility': visibility?.index,
+          'publicVersion': publicVersion?.toMap(),
           'timeoutAfter': timeoutAfter,
           'category': category?.name,
           'fullScreenIntent': fullScreenIntent,

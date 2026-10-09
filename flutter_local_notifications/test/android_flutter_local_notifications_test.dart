@@ -185,6 +185,7 @@ void main() {
               'ledOffMs': null,
               'ticker': null,
               'visibility': null,
+              'publicVersion': null,
               'timeoutAfter': null,
               'category': null,
               'additionalFlags': null,
@@ -320,6 +321,7 @@ void main() {
               'ledOffMs': null,
               'ticker': null,
               'visibility': null,
+              'publicVersion': null,
               'timeoutAfter': null,
               'category': null,
               'additionalFlags': null,
@@ -419,6 +421,7 @@ void main() {
                 'ledOffMs': null,
                 'ticker': null,
                 'visibility': null,
+                'publicVersion': null,
                 'timeoutAfter': null,
                 'category': null,
                 'fullScreenIntent': false,
@@ -520,6 +523,7 @@ void main() {
                 'ledOffMs': null,
                 'ticker': null,
                 'visibility': null,
+                'publicVersion': null,
                 'timeoutAfter': null,
                 'category': null,
                 'additionalFlags': null,
@@ -622,6 +626,7 @@ void main() {
                 'ledOffMs': null,
                 'ticker': null,
                 'visibility': null,
+                'publicVersion': null,
                 'timeoutAfter': null,
                 'category': null,
                 'additionalFlags': null,
@@ -723,6 +728,7 @@ void main() {
               'ledOffMs': null,
               'ticker': null,
               'visibility': null,
+              'publicVersion': null,
               'timeoutAfter': null,
               'category': null,
               'additionalFlags': null,
@@ -824,6 +830,7 @@ void main() {
                 'ledOffMs': null,
                 'ticker': null,
                 'visibility': null,
+                'publicVersion': null,
                 'timeoutAfter': null,
                 'category': null,
                 'additionalFlags': null,
@@ -924,6 +931,7 @@ void main() {
                 'ledOffMs': null,
                 'ticker': null,
                 'visibility': null,
+                'publicVersion': null,
                 'timeoutAfter': null,
                 'category': null,
                 'additionalFlags': null,
@@ -1024,6 +1032,7 @@ void main() {
                 'ledOffMs': null,
                 'ticker': null,
                 'visibility': null,
+                'publicVersion': null,
                 'timeoutAfter': null,
                 'category': null,
                 'additionalFlags': null,
@@ -1127,6 +1136,7 @@ void main() {
                 'ledOffMs': null,
                 'ticker': null,
                 'visibility': null,
+                'publicVersion': null,
                 'timeoutAfter': null,
                 'category': null,
                 'additionalFlags': null,
@@ -1245,6 +1255,7 @@ void main() {
               'ledOffMs': null,
               'ticker': null,
               'visibility': null,
+              'publicVersion': null,
               'timeoutAfter': null,
               'category': null,
               'additionalFlags': null,
@@ -1355,6 +1366,7 @@ void main() {
               'ledOffMs': null,
               'ticker': null,
               'visibility': null,
+              'publicVersion': null,
               'timeoutAfter': null,
               'category': null,
               'additionalFlags': null,
@@ -1473,6 +1485,7 @@ void main() {
                 'ledOffMs': null,
                 'ticker': null,
                 'visibility': null,
+                'publicVersion': null,
                 'timeoutAfter': null,
                 'category': null,
                 'additionalFlags': null,
@@ -1581,6 +1594,7 @@ void main() {
               'ledOffMs': null,
               'ticker': null,
               'visibility': null,
+              'publicVersion': null,
               'timeoutAfter': null,
               'category': null,
               'additionalFlags': null,
@@ -1693,6 +1707,7 @@ void main() {
               'ledOffMs': null,
               'ticker': null,
               'visibility': null,
+              'publicVersion': null,
               'timeoutAfter': null,
               'category': null,
               'additionalFlags': null,
@@ -1796,6 +1811,7 @@ void main() {
               'ledOffMs': null,
               'ticker': null,
               'visibility': null,
+              'publicVersion': null,
               'timeoutAfter': null,
               'category': null,
               'additionalFlags': null,
@@ -1896,6 +1912,7 @@ void main() {
               'ledOffMs': null,
               'ticker': null,
               'visibility': null,
+              'publicVersion': null,
               'timeoutAfter': null,
               'category': null,
               'additionalFlags': null,
@@ -1997,6 +2014,7 @@ void main() {
               'ledOffMs': null,
               'ticker': null,
               'visibility': null,
+              'publicVersion': null,
               'timeoutAfter': null,
               'category': null,
               'additionalFlags': null,
@@ -2133,6 +2151,7 @@ void main() {
               'ledOffMs': null,
               'ticker': null,
               'visibility': null,
+              'publicVersion': null,
               'timeoutAfter': null,
               'category': null,
               'additionalFlags': null,
@@ -2173,6 +2192,80 @@ void main() {
           },
         ),
       );
+    });
+
+    test('show with Android public version', () async {
+      const AndroidInitializationSettings androidInitializationSettings =
+          AndroidInitializationSettings('app_icon');
+      const InitializationSettings initializationSettings =
+          InitializationSettings(android: androidInitializationSettings);
+      await flutterLocalNotificationsPlugin.initialize(
+        settings: initializationSettings,
+      );
+      const AndroidNotificationDetails androidNotificationDetails =
+          AndroidNotificationDetails(
+            'channelId',
+            'channelName',
+            visibility: NotificationVisibility.private,
+            publicVersion: AndroidPublicVersion(
+              title: 'public title',
+              body: 'public body',
+            ),
+          );
+      await flutterLocalNotificationsPlugin.show(
+        id: 1,
+        title: 'notification title',
+        body: 'notification body',
+        notificationDetails: const NotificationDetails(
+          android: androidNotificationDetails,
+        ),
+      );
+      final Map<Object?, Object?> arguments =
+          log.last.arguments as Map<Object?, Object?>;
+      final Map<Object?, Object?> platformSpecifics =
+          arguments['platformSpecifics']! as Map<Object?, Object?>;
+      expect(
+        platformSpecifics['visibility'],
+        NotificationVisibility.private.index,
+      );
+      expect(platformSpecifics['publicVersion'], <String, Object?>{
+        'title': 'public title',
+        'body': 'public body',
+      });
+      expect(arguments['title'], 'notification title');
+      expect(arguments['body'], 'notification body');
+    });
+
+    test('show with Android public version without title or body', () async {
+      const AndroidInitializationSettings androidInitializationSettings =
+          AndroidInitializationSettings('app_icon');
+      const InitializationSettings initializationSettings =
+          InitializationSettings(android: androidInitializationSettings);
+      await flutterLocalNotificationsPlugin.initialize(
+        settings: initializationSettings,
+      );
+      const AndroidNotificationDetails androidNotificationDetails =
+          AndroidNotificationDetails(
+            'channelId',
+            'channelName',
+            publicVersion: AndroidPublicVersion(),
+          );
+      await flutterLocalNotificationsPlugin.show(
+        id: 1,
+        title: 'notification title',
+        body: 'notification body',
+        notificationDetails: const NotificationDetails(
+          android: androidNotificationDetails,
+        ),
+      );
+      final Map<Object?, Object?> arguments =
+          log.last.arguments as Map<Object?, Object?>;
+      final Map<Object?, Object?> platformSpecifics =
+          arguments['platformSpecifics']! as Map<Object?, Object?>;
+      expect(platformSpecifics['publicVersion'], <String, Object?>{
+        'title': null,
+        'body': null,
+      });
     });
 
     group('periodicallyShow', () {
@@ -2260,6 +2353,7 @@ void main() {
                     'ledOffMs': null,
                     'ticker': null,
                     'visibility': null,
+                    'publicVersion': null,
                     'timeoutAfter': null,
                     'category': null,
                     'additionalFlags': null,
@@ -2412,6 +2506,7 @@ void main() {
                     'ledOffMs': null,
                     'ticker': null,
                     'visibility': null,
+                    'publicVersion': null,
                     'timeoutAfter': null,
                     'category': null,
                     'additionalFlags': null,
@@ -2522,6 +2617,7 @@ void main() {
                 'ledOffMs': null,
                 'ticker': null,
                 'visibility': null,
+                'publicVersion': null,
                 'timeoutAfter': null,
                 'category': null,
                 'additionalFlags': null,
@@ -2631,6 +2727,7 @@ void main() {
                 'ledOffMs': null,
                 'ticker': null,
                 'visibility': null,
+                'publicVersion': null,
                 'timeoutAfter': null,
                 'category': null,
                 'additionalFlags': null,
@@ -2741,6 +2838,7 @@ void main() {
                 'ledOffMs': null,
                 'ticker': null,
                 'visibility': null,
+                'publicVersion': null,
                 'timeoutAfter': null,
                 'category': null,
                 'additionalFlags': null,
@@ -3119,6 +3217,7 @@ void main() {
                 'ledOffMs': null,
                 'ticker': null,
                 'visibility': null,
+                'publicVersion': null,
                 'timeoutAfter': null,
                 'category': null,
                 'additionalFlags': null,

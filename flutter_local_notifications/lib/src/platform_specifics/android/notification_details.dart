@@ -105,6 +105,30 @@ class AndroidNotificationAction {
   final bool invisible;
 }
 
+/// The redacted form of a notification that Android shows on a secure lock
+/// screen when the notification's [NotificationVisibility] is
+/// [NotificationVisibility.private].
+///
+/// Without this, the system substitutes its own generic wording. Supplying it
+/// lets the application decide exactly what a bystander can read.
+///
+/// Corresponds to `Notification.publicVersion`, which is set through
+/// `NotificationCompat.Builder.setPublicVersion`.
+///
+/// This has no effect unless [AndroidNotificationDetails.visibility] is
+/// [NotificationVisibility.private]; the device lock screen must also be
+/// secured and configured to hide sensitive content.
+class AndroidPublicVersion {
+  /// Constructs an instance of [AndroidPublicVersion].
+  const AndroidPublicVersion({this.title, this.body});
+
+  /// The title shown in place of the original title.
+  final String? title;
+
+  /// The body shown in place of the original body.
+  final String? body;
+}
+
 /// Contains notification details specific to Android.
 class AndroidNotificationDetails {
   /// Constructs an instance of [AndroidNotificationDetails].
@@ -146,6 +170,7 @@ class AndroidNotificationDetails {
     this.ledOffMs,
     this.ticker,
     this.visibility,
+    this.publicVersion,
     this.timeoutAfter,
     this.category,
     this.fullScreenIntent = false,
@@ -342,6 +367,12 @@ class AndroidNotificationDetails {
 
   /// Defines the notification visibility on the lockscreen.
   final NotificationVisibility? visibility;
+
+  /// The redacted form shown on a secure lock screen.
+  ///
+  /// Only consulted when [visibility] is [NotificationVisibility.private].
+  /// When `null`, the system supplies its own generic wording.
+  final AndroidPublicVersion? publicVersion;
 
   /// The duration in milliseconds after which the notification will be
   /// cancelled if it hasn't already.

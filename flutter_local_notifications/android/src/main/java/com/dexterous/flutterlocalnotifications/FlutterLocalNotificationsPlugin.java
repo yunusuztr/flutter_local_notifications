@@ -454,6 +454,7 @@ public class FlutterLocalNotificationsPlugin
     }
 
     setVisibility(notificationDetails, builder);
+    setPublicVersion(context, notificationDetails, builder);
     applyGrouping(notificationDetails, builder);
     setSound(context, notificationDetails, builder);
     setVibrationPattern(notificationDetails, builder);
@@ -952,6 +953,37 @@ public class FlutterLocalNotificationsPlugin
     }
 
     builder.setVisibility(visibility);
+  }
+
+  /**
+   * Sets the redacted form that Android shows on a secure lock screen when the notification's
+   * visibility is private.
+   *
+   * <p>Without this, the system substitutes its own generic wording. The redacted notification
+   * reuses the channel and the small icon so it keeps the same importance and branding.
+   */
+  private static void setPublicVersion(
+      Context context,
+      NotificationDetails notificationDetails,
+      NotificationCompat.Builder builder) {
+    if (notificationDetails.publicVersion == null) {
+      return;
+    }
+
+    NotificationCompat.Builder publicBuilder =
+        new NotificationCompat.Builder(context, notificationDetails.channelId)
+            .setContentTitle(notificationDetails.publicVersion.title)
+            .setContentText(notificationDetails.publicVersion.body)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+    setSmallIcon(context, notificationDetails, publicBuilder);
+    if (notificationDetails.showWhen != null) {
+      publicBuilder.setShowWhen(BooleanUtils.getValue(notificationDetails.showWhen));
+    }
+    if (notificationDetails.when != null) {
+      publicBuilder.setWhen(notificationDetails.when);
+    }
+
+    builder.setPublicVersion(publicBuilder.build());
   }
 
   private static void applyGrouping(

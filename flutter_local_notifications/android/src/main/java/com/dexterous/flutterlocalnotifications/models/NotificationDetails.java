@@ -105,6 +105,7 @@ public class NotificationDetails implements Serializable {
   private static final String LED_ON_MS = "ledOnMs";
   private static final String LED_OFF_MS = "ledOffMs";
   private static final String VISIBILITY = "visibility";
+  private static final String PUBLIC_VERSION = "publicVersion";
 
   private static final String TICKER = "ticker";
   private static final String SCHEDULE_MODE = "scheduleMode";
@@ -177,6 +178,7 @@ public class NotificationDetails implements Serializable {
   public Integer ledOffMs;
   public String ticker;
   public Integer visibility;
+  @Nullable public PublicVersionDetails publicVersion;
 
   @SerializedName(value = "scheduleMode", alternate = "allowWhileIdle")
   public ScheduleMode scheduleMode;
@@ -284,6 +286,10 @@ public class NotificationDetails implements Serializable {
       readLargeIconInformation(notificationDetails, platformChannelSpecifics);
       notificationDetails.ticker = (String) platformChannelSpecifics.get(TICKER);
       notificationDetails.visibility = (Integer) platformChannelSpecifics.get(VISIBILITY);
+      @SuppressWarnings("unchecked")
+      Map<String, Object> publicVersion =
+          (Map<String, Object>) platformChannelSpecifics.get(PUBLIC_VERSION);
+      notificationDetails.publicVersion = PublicVersionDetails.from(publicVersion);
       if (platformChannelSpecifics.containsKey(SCHEDULE_MODE)) {
         notificationDetails.scheduleMode =
             ScheduleMode.valueOf((String) platformChannelSpecifics.get(SCHEDULE_MODE));
